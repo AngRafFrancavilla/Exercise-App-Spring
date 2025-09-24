@@ -1,0 +1,36 @@
+services:
+  app:
+    build: .
+    container_name: exercise-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/exercise
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: raffo
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
+    networks:
+      - exercise-net
+    command: ["sh", "-c", "sleep 10 && java -jar /app/app.jar"]
+
+  db:
+    image: mysql:8.1
+    container_name: exercise-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: raffo
+      MYSQL_DATABASE: exercise
+    ports:
+      - "3307:3306"   # MySQL access da host → usa 3307 invece di 3306
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - exercise-net
+
+networks:
+  exercise-net:
+
+volumes:
+  db_data:
