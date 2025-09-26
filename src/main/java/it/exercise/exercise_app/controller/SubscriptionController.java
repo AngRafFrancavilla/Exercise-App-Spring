@@ -46,6 +46,7 @@ public class SubscriptionController {
     }
 
     //Questo endpoint serve per aggiornare gli abbonamenti di un utente e disattivando quelli vecchi
+
     @PutMapping("/update/{userId}")
     public ResponseEntity<Void> updateUserSubscriptions(
             @PathVariable Long userId,
@@ -63,7 +64,7 @@ public class SubscriptionController {
         return subscriptions.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(subscriptions);
     }
 
-    //Questo endpoint stampa tutti gli abbonamenti attivi presenti nel db
+    //Questo endpoint stampa tutti gli abbonamenti attivi presenti sul db
     @GetMapping("/subscription/active")
     public ResponseEntity<List<SubscriptionDTO>> getAllActiveSubscriptions(){
         List<SubscriptionDTO> subscriptions = subscriptionService.getAllActiveSubscriptions();

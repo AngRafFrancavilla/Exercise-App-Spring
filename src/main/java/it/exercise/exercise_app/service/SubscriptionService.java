@@ -21,9 +21,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SubscriptionService {
 
+    private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionMapper subscriptionMapper;
-    private final UserRepository userRepository; // ✅ aggiunto
+
 
     public List<SubscriptionDTO> getAllSubscriptions() {
         return subscriptionRepository.findAll().stream()
@@ -83,8 +84,8 @@ public class SubscriptionService {
 
                     if (dto.getPrice() != null) {
                         SubscriptionDetail detail = new SubscriptionDetail();
-                        detail.setPrice(BigDecimal.valueOf(dto.getPrice())); // converti Double -> BigDecimal
-                        detail.setSubscription(sub); // collega il dettaglio all'abbonamento
+                        detail.setPrice(BigDecimal.valueOf(dto.getPrice()));
+                        detail.setSubscription(sub);
 
                         if (sub.getDetails() == null) sub.setDetails(new ArrayList<>());
                         sub.getDetails().add(detail);
@@ -110,10 +111,8 @@ public class SubscriptionService {
     }
 
     public List<SubscriptionDTO> getAllActiveSubscriptions() {
-        List<Subscription> activeSubscriptions = subscriptionRepository.findAll()
-                .stream()
-                .filter(sub -> "Active".equalsIgnoreCase(sub.getStatus()))
-                .toList();
+        List<Subscription> activeSubscriptions = subscriptionRepository.findByStatusIgnoreCase("ACTIVE");
+
         System.out.println("DEBUG : Found " + activeSubscriptions.size() + "active subscriptions");
 
         return activeSubscriptions.stream()

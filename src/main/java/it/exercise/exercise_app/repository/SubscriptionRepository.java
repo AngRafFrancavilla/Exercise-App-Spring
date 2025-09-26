@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
+    List<Subscription> findByStatusIgnoreCase(String status);
     List<Subscription> findByUser(User user);
 }
 

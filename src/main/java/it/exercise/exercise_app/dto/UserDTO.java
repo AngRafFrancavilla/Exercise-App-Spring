@@ -14,5 +14,5 @@ public class UserDTO {
     private Long id;
     private String username;
     private String email;
-    private List<SubscriptionDTO> subscriptions; // opzionale
+    private List<SubscriptionDTO> subscriptions;
 }
