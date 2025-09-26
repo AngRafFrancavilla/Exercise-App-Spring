@@ -15,6 +15,6 @@ public class SubscriptionUpdateRequestDTO {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String status; // active/inactive
-    private Double price;  // se hai un campo prezzo
+    private String status;
+    private Double price;
 }

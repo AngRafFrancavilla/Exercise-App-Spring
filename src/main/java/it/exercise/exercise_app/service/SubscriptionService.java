@@ -25,46 +25,24 @@ public class SubscriptionService {
     private final SubscriptionMapper subscriptionMapper;
     private final UserRepository userRepository; // ✅ aggiunto
 
-    // Recupera tutti gli abbonamenti
     public List<SubscriptionDTO> getAllSubscriptions() {
-        List<Subscription> subscriptions = subscriptionRepository.findAll();
-        System.out.println("DEBUG: Found " + subscriptions.size() + " subscriptions from DB");
-
-        // Debug della prima subscription se esiste
-        if (!subscriptions.isEmpty()) {
-            Subscription first = subscriptions.get(0);
-            System.out.println("DEBUG: First subscription - ID: " + first.getId() +
-                    ", Name: " + first.getName() +
-                    ", Status: " + first.getStatus());
-        }
-
-        // Test del mapper
-        List<SubscriptionDTO> dtos = subscriptions.stream()
-                .map(sub -> {
-                    SubscriptionDTO dto = subscriptionMapper.toDTO(sub);
-                    System.out.println("DEBUG: Mapped DTO - ID: " + (dto != null ? dto.getId() : "null") +
-                            ", Name: " + (dto != null ? dto.getName() : "null"));
-                    return dto;
-                })
+        return subscriptionRepository.findAll().stream()
+                .map(subscriptionMapper::toDTO)
                 .collect(Collectors.toList());
-
-        return dtos;
     }
 
-    // Recupera un abbonamento per ID
     public SubscriptionDTO getSubscriptionById(Long id) {
         return subscriptionRepository.findById(id)
                 .map(subscriptionMapper::toDTO)
                 .orElse(null);
     }
 
-    // Crea un nuovo abbonamento
     public SubscriptionDTO createSubscription(Subscription subscription) {
         Subscription saved = subscriptionRepository.save(subscription);
         return subscriptionMapper.toDTO(saved);
     }
 
-    // Aggiorna un abbonamento esistente
+
     public SubscriptionDTO updateSubscription(Long id, Subscription updated) {
         return subscriptionRepository.findById(id)
                 .map(sub -> {
@@ -77,7 +55,6 @@ public class SubscriptionService {
                 }).orElse(null);
     }
 
-    // Elimina un abbonamento
     public boolean deleteSubscription(Long id) {
         if (subscriptionRepository.existsById(id)) {
             subscriptionRepository.deleteById(id);
@@ -119,4 +96,28 @@ public class SubscriptionService {
         subscriptionRepository.saveAll(mappedSubscriptions);
     }
 
+    public List<SubscriptionDTO> getActiveSubscriptionsByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        List<Subscription> activeSubscriptions = subscriptionRepository.findByUser(user).stream()
+                .filter(sub -> "ACTIVE".equalsIgnoreCase(sub.getStatus()))
+                .toList();
+
+        return activeSubscriptions.stream()
+                .map(subscriptionMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<SubscriptionDTO> getAllActiveSubscriptions() {
+        List<Subscription> activeSubscriptions = subscriptionRepository.findAll()
+                .stream()
+                .filter(sub -> "Active".equalsIgnoreCase(sub.getStatus()))
+                .toList();
+        System.out.println("DEBUG : Found " + activeSubscriptions.size() + "active subscriptions");
+
+        return activeSubscriptions.stream()
+                .map(subscriptionMapper::toDTO)
+                .toList();
+    }
 }
